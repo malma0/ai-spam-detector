@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Spam Detector</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+
+    <header class="header">
+      <div>
+        <h1><span>AI</span> Spam Detector</h1>
+        <p>Определение спам-сообщений с помощью искусственного интеллекта</p>
+      </div>
+      <div class="status-pill">
+        <span class="dot"></span>
+        API Status <strong>Online</strong>
+      </div>
+    </header>
+
+    <section class="top-grid">
+      <div class="card">
+        <h2>Проверка текста</h2>
+        <p class="sub">Введите текст сообщения для анализа на спам</p>
+
+        <textarea id="messageInput" maxlength="5000" placeholder="Вставьте текст сообщения здесь..."></textarea>
+        <div class="char-count"><span id="charCount">0</span>/5000 символов</div>
+
+        <div class="actions">
+          <button id="analyzeBtn" class="primary">Анализировать</button>
+          <button id="clearBtn" class="secondary">Очистить</button>
+        </div>
+      </div>
+
+      <div class="card result-card">
+        <h2>Результат анализа</h2>
+
+        <div class="result-box">
+          <div>
+            <h3 id="resultLabel">NOT SPAM</h3>
+            <p id="resultDesc">Сообщение не является спамом</p>
+          </div>
+          <div class="score-circle">
+            <span id="scorePercent">94%</span>
+          </div>
+        </div>
+
+        <div class="details">
+          <div><span>Модель:</span><strong id="modelName">bert spam detector</strong></div>
+          <div><span>Метка:</span><strong id="labelValue">NOT SPAM</strong></div>
+          <div><span>Оценка:</span><strong id="scoreValue">0.9421</strong></div>
+          <div><span>Дата и время:</span><strong id="dateValue">--</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card history-card">
+      <div class="history-header">
+        <div>
+          <h2>История запросов</h2>
+          <p class="sub">Последние проанализированные сообщения</p>
+        </div>
+        <button class="secondary">Обновить</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Текст</th>
+            <th>Результат</th>
+            <th>Score</th>
+            <th>Дата</th>
+          </tr>
+        </thead>
+        <tbody id="historyTable"></tbody>
+      </table>
+    </section>
+
+    <section class="bottom-grid">
+      <div class="card">
+        <h2>Статус системы</h2>
+        <div class="system-grid">
+          <div class="mini-box">API<br><span>Работает</span></div>
+          <div class="mini-box">База данных<br><span>Подключено</span></div>
+          <div class="mini-box">Модель AI<br><span>Загружена</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>О сервисе</h2>
+        <p>Сервис использует модель машинного обучения для определения спама в текстовых сообщениях.</p>
+        <p>Backend: FastAPI • Database: PostgreSQL • AI: Hugging Face</p>
+      </div>
+    </section>
+
+    <footer>
+      © 2026 AI Spam Detector. Все права защищены.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
