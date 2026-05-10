@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -16,8 +16,22 @@ def get_history(request: Request, db: Session = Depends(get_db)):
         db.query(AnalysisHistory)
         .filter(AnalysisHistory.user_ip == user_ip)
         .order_by(AnalysisHistory.created_at.desc())
-        .limit(10)
+        .limit(20)
         .all()
     )
 
     return history
+
+
+@router.get("/{history_id}", response_model=HistoryItem)
+def get_history_item(history_id: int, db: Session = Depends(get_db)):
+    item = (
+        db.query(AnalysisHistory)
+        .filter(AnalysisHistory.id == history_id)
+        .first()
+    )
+
+    if item is None:
+        raise HTTPException(status_code=404, detail="Запись истории не найдена")
+
+    return item

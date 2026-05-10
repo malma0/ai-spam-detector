@@ -14,9 +14,9 @@
         <h1><span>AI</span> Spam Detector</h1>
         <p>Определение спам-сообщений с помощью искусственного интеллекта</p>
       </div>
-      <div class="status-pill">
-        <span class="dot"></span>
-        API Status <strong>Online</strong>
+      <div class="status-pill" id="apiStatus">
+        <span class="dot" id="apiDot"></span>
+        API Status <strong id="apiStatusText">Checking...</strong>
       </div>
     </header>
 
@@ -48,7 +48,7 @@
         </div>
 
         <div class="details">
-          <div><span>Модель:</span><strong id="modelName">bert spam detector</strong></div>
+          <strong id="modelName">RUSpam DeBERTa v4</strong>
           <div><span>Метка:</span><strong id="labelValue">NOT SPAM</strong></div>
           <div><span>Оценка:</span><strong id="scoreValue">0.9421</strong></div>
           <div><span>Дата и время:</span><strong id="dateValue">--</strong></div>
@@ -62,7 +62,7 @@
           <h2>История запросов</h2>
           <p class="sub">Последние проанализированные сообщения</p>
         </div>
-        <button class="secondary">Обновить</button>
+        <button class="secondary" id="refreshBtn">Обновить</button>
       </div>
 
       <table>
@@ -83,16 +83,16 @@
       <div class="card">
         <h2>Статус системы</h2>
         <div class="system-grid">
-          <div class="mini-box">API<br><span>Работает</span></div>
-          <div class="mini-box">База данных<br><span>Подключено</span></div>
-          <div class="mini-box">Модель AI<br><span>Загружена</span></div>
+          <div class="mini-box">API<br><span id="apiMiniStatus">Проверка...</span></div>
+          <div class="mini-box">База данных<br><span id="dbMiniStatus">Проверка...</span></div>
+          <div class="mini-box">Модель AI<br><span id="modelMiniStatus">Проверка...</span></div>
         </div>
       </div>
 
       <div class="card">
         <h2>О сервисе</h2>
         <p>Сервис использует модель машинного обучения для определения спама в текстовых сообщениях.</p>
-        <p>Backend: FastAPI • Database: PostgreSQL • AI: Hugging Face</p>
+        <p>Backend: FastAPI • Database: SQLite • AI: Hugging Face Transformers (RUSpam DeBERTa v4)</p>
       </div>
     </section>
 

@@ -177,3 +177,7 @@ footer {
   display: inline-block;
   margin-right: 8px;
 }
+
+.history-card {
+  margin-top: 20px;
+}

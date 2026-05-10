@@ -4,3 +4,7 @@ sqlalchemy
 pydantic-settings
 scikit-learn
 joblib
+transformers
+torch
+python-dotenv
+psycopg2-binary

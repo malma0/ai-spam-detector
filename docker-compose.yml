@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ./backend
+    container_name: spam_detector_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/spam_detector
+      MODEL_NAME: RUSpam/spam_deberta_v4
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    container_name: spam_detector_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: spam_detector
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

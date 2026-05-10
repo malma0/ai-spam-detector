@@ -22,6 +22,7 @@ def analyze_text(
 
     label = result["label"]
     probability = result["probability"]
+    model_name = result["model_name"]
 
     if label == "SPAM":
         message = "Сообщение похоже на спам"
@@ -32,7 +33,8 @@ def analyze_text(
         user_ip=user_ip,
         text=data.text,
         label=label,
-        probability=probability
+        probability=probability,
+        model_name=model_name
     )
 
     db.add(history_item)
@@ -41,5 +43,6 @@ def analyze_text(
     return {
         "label": label,
         "probability": probability,
-        "message": message
+        "message": message,
+        "model_name": model_name
     }
