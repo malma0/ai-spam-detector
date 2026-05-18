@@ -2,23 +2,25 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 
-class AnalyzeRequest(BaseModel):
-    text: str = Field(..., min_length=1)
+class TextRequest(BaseModel):
+    text: str = Field(
+        ...,
+        min_length=1,
+        max_length=1000
+    )
 
 
 class AnalyzeResponse(BaseModel):
     label: str
-    probability: float
-    message: str
+    score: float
     model_name: str
 
 
-class HistoryItem(BaseModel):
+class HistoryResponse(BaseModel):
     id: int
-    text: str
-    label: str
-    probability: float
-    model_name: str
+    input_text: str
+    result_text: str
+    score: float
     created_at: datetime
 
     class Config:

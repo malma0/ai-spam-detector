@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db import Base, engine
-from app.routes import health, analyze, history
+from app.routes import analyze
+from app.routes import history
+from app.routes import health
+from app.routes import summarize
 
-
-Base.metadata.create_all(bind=engine)
-
-app = FastAPI(title="AI Spam Detector")
+app = FastAPI(
+    title="AI Spam Detector API",
+    version="1.0.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,13 +19,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router)
 app.include_router(analyze.router)
 app.include_router(history.router)
+app.include_router(health.router)
+app.include_router(summarize.router)
 
 
 @app.get("/")
-def root():
+async def root():
     return {
-        "message": "AI Spam Detector API"
+        "message": "AI Spam Detector API is running"
     }
