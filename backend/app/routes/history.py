@@ -1,37 +1,42 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Query
+from app.security import verify_api_key
 
-from app.db import get_db
-from app.models import AnalysisHistory
-from app.schemas import HistoryItem
-
-router = APIRouter(prefix="/history", tags=["History"])
+router = APIRouter()
 
 
-@router.get("", response_model=list[HistoryItem])
-def get_history(request: Request, db: Session = Depends(get_db)):
-    user_ip = request.client.host
+fake_history = [
+    {
+        "id": 1,
+        "input_text": "Win free iPhone now!",
+        "result_text": "SPAM",
+        "score": 0.98,
+        "created_at": "2026-05-18 12:00:00"
+    },
+    {
+        "id": 2,
+        "input_text": "Hello, how are you?",
+        "result_text": "NOT SPAM",
+        "score": 0.95,
+        "created_at": "2026-05-18 12:10:00"
+    }
+]
 
-    history = (
-        db.query(AnalysisHistory)
-        .filter(AnalysisHistory.user_ip == user_ip)
-        .order_by(AnalysisHistory.created_at.desc())
-        .limit(20)
-        .all()
-    )
 
-    return history
+@router.get(
+    "/history",
+    dependencies=[Depends(verify_api_key)]
+)
+async def get_history(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100)
+):
 
+    offset = (page - 1) * limit
 
-@router.get("/{history_id}", response_model=HistoryItem)
-def get_history_item(history_id: int, db: Session = Depends(get_db)):
-    item = (
-        db.query(AnalysisHistory)
-        .filter(AnalysisHistory.id == history_id)
-        .first()
-    )
+    paginated_items = fake_history[offset: offset + limit]
 
-    if item is None:
-        raise HTTPException(status_code=404, detail="Запись истории не найдена")
-
-    return item
+    return {
+        "page": page,
+        "limit": limit,
+        "items": paginated_items
+    }

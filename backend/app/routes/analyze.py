@@ -1,48 +1,27 @@
-from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
+from transformers import pipeline
 
-from app.db import get_db
-from app.models import AnalysisHistory
-from app.schemas import AnalyzeRequest, AnalyzeResponse
-from app.services.ml_service import predict_spam
+from app.schemas import TextRequest
+from app.security import verify_api_key
+
+router = APIRouter()
+
+classifier = pipeline(
+    "text-classification",
+    model="mrm8488/bert-tiny-finetuned-sms-spam-detection"
+)
 
 
-router = APIRouter(prefix="/analyze", tags=["Analyze"])
+@router.post(
+    "/analyze",
+    dependencies=[Depends(verify_api_key)]
+)
+async def analyze_text(data: TextRequest):
 
-
-@router.post("", response_model=AnalyzeResponse)
-def analyze_text(
-    data: AnalyzeRequest,
-    request: Request,
-    db: Session = Depends(get_db)
-):
-    user_ip = request.client.host
-
-    result = predict_spam(data.text)
-
-    label = result["label"]
-    probability = result["probability"]
-    model_name = result["model_name"]
-
-    if label == "SPAM":
-        message = "Сообщение похоже на спам"
-    else:
-        message = "Сообщение похоже на обычное сообщение"
-
-    history_item = AnalysisHistory(
-        user_ip=user_ip,
-        text=data.text,
-        label=label,
-        probability=probability,
-        model_name=model_name
-    )
-
-    db.add(history_item)
-    db.commit()
+    result = classifier(data.text)[0]
 
     return {
-        "label": label,
-        "probability": probability,
-        "message": message,
-        "model_name": model_name
+        "label": result["label"],
+        "score": round(result["score"], 4),
+        "model_name": "mrm8488/bert-tiny-finetuned-sms-spam-detection"
     }
