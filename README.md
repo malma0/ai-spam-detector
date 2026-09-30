@@ -1,142 +1,99 @@
-AI Spam Detector
+# AI Spam Detector
 
-Система для определения спам-сообщений с использованием искусственного интеллекта.
+REST API и веб-интерфейс для определения спама в текстовых сообщениях с помощью ML-моделей. Сервис классифицирует текст как **SPAM / NOT SPAM**, возвращает уверенность модели, хранит историю проверок и умеет кратко пересказывать длинный текст.
 
-Проект разработан на Python с использованием FastAPI, PostgreSQL и модели машинного обучения для классификации текста на SPAM / NOT SPAM.
+## Возможности
 
-Используемые технологии
-Backend
-Python 3.11+
-FastAPI
-SQLAlchemy
-Pydantic
-Uvicorn
-База данных
-PostgreSQL
-Docker / Docker Compose
-AI / Machine Learning
-Scikit-learn
-TF-IDF Vectorizer
-Logistic Regression
-Frontend
-HTML5
-CSS3
-JavaScript
-Возможности проекта
-Анализ текста на спам
-Определение вероятности спама
-История запросов
-REST API
-Swagger документация
-Проверка состояния системы
-Работа с PostgreSQL
-Docker контейнер для базы данных
-Структура проекта
+- классификация текста на спам с вероятностью (transformer-модель с Hugging Face);
+- краткий пересказ текста (`facebook/bart-large-cnn`);
+- история запросов в PostgreSQL;
+- защита эндпоинтов API-ключом (заголовок `X-API-Key`);
+- Swagger-документация и health-check;
+- простой веб-интерфейс на HTML/CSS/JS;
+- базовая модель TF-IDF + Logistic Regression (`backend/app/ml/train_model.py`) для обучения на своих данных.
+
+## Стек
+
+| Часть | Технологии |
+|-------|-----------|
+| Backend | Python 3.11+, FastAPI, SQLAlchemy, Pydantic, Uvicorn |
+| ML | Hugging Face Transformers, scikit-learn (TF-IDF, Logistic Regression) |
+| База данных | PostgreSQL 16 |
+| Инфраструктура | Docker, Docker Compose, GitHub Actions |
+| Frontend | HTML5, CSS3, JavaScript |
+
+## Структура
+
+```
 ai-spam-detector/
-│
 ├── backend/
 │   ├── app/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── main.py
+│   │   ├── main.py          # FastAPI-приложение, CORS, подключение роутеров
+│   │   ├── routes/          # analyze, history, health, summarize
+│   │   ├── services/        # ml_service: загрузка модели и предсказание
+│   │   ├── ml/              # обучение базовой модели и spam_model.pkl
+│   │   └── models.py, schemas.py, db.py, config.py, security.py
 │   ├── requirements.txt
-│   └── docker-compose.yml
-│
-├── frontend/
-│   ├── index.html
-│   ├── styles.css
-│   └── script.js
-│
-└── README.md
-Установка проекта
-1. Клонирование проекта
-git clone <repository_url>
-cd ai-spam-detector
-Настройка Backend
-2. Переход в backend
+│   └── DockerFile
+├── frontend/                # index.html, styles.css, script.js
+├── docker-compose.yml       # backend + PostgreSQL
+└── .env.example
+```
+
+## Запуск
+
+### Через Docker Compose
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+API будет на http://localhost:8000, Swagger на http://localhost:8000/docs.
+
+### Локально
+
+```bash
+docker compose up -d postgres    # из корня проекта, только база
 cd backend
-3. Создание виртуального окружения
 python -m venv venv
-4. Активация окружения
-Linux / Ubuntu
-source venv/bin/activate
-Windows
-venv\Scripts\activate
-5. Установка зависимостей
+venv\Scripts\activate            # Linux/macOS: source venv/bin/activate
 pip install -r requirements.txt
-Запуск PostgreSQL через Docker
-6. Запуск контейнера
-docker compose up -d
-Проверка контейнера
-docker ps
-
-Если контейнер работает, будет отображён PostgreSQL на порту 5432.
-
-Запуск Backend
-7. Запуск FastAPI сервера
 python -m uvicorn app.main:app --reload
+```
 
-Backend будет доступен по адресу:
+### Frontend
 
-http://127.0.0.1:8000
-Swagger документация
+Открыть `frontend/index.html` в браузере или через Live Server в VS Code (http://127.0.0.1:5500).
 
-После запуска backend доступна Swagger документация:
+### Переменные окружения
 
-http://127.0.0.1:8000/docs
+| Переменная | Назначение |
+|-----------|-----------|
+| `API_KEY` | ключ для доступа к API (заголовок `X-API-Key`) |
+| `DATABASE_URL` | строка подключения к PostgreSQL |
+| `MODEL_NAME` | модель классификации с Hugging Face |
 
-Через Swagger можно:
+## API
 
-тестировать API
-отправлять POST запросы
-просматривать ответы сервера
-Запуск Frontend
-8. Открытие frontend
-
-Открыть файл:
-
-frontend/index.html
-
-или использовать Live Server в VS Code.
-
-Frontend обычно работает по адресу:
-
-http://127.0.0.1:5500
-Основные API endpoints
-Проверка состояния системы
-GET /health
-Анализ текста
-POST /analyze
+| Метод | Путь | Описание |
+|-------|------|----------|
+| GET | `/health` | состояние сервиса |
+| POST | `/analyze` | проверка текста на спам |
+| POST | `/summarize` | краткий пересказ текста |
+| GET | `/history` | история проверок |
 
 Пример запроса:
 
-{
-  "text": "Вы выиграли айфон, перейдите по ссылке"
-}
-Получение истории запросов
-GET /history
-Пример работы системы
-SPAM
-Вы выиграли айфон, перейдите по ссылке и заберите приз
+```bash
+curl -X POST http://localhost:8000/analyze \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: <ваш ключ>" \
+  -d '{"text": "Вы выиграли айфон, перейдите по ссылке"}'
+```
 
-Результат:
+Пример ответа:
 
-SPAM
-NOT SPAM
-Привет, как дела?
-
-Результат:
-
-NOT SPAM
-Docker
-
-Для проекта используется Docker контейнер PostgreSQL.
-
-Проверка контейнеров:
-
-docker ps
-
-Остановка контейнеров:
-
-docker compose down
+```json
+{ "label": "SPAM", "score": 0.9731, "model_name": "mrm8488/bert-tiny-finetuned-sms-spam-detection" }
+```
