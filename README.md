@@ -2,6 +2,8 @@
 
 REST API и веб-интерфейс для определения спама в текстовых сообщениях с помощью ML-моделей. Сервис классифицирует текст как **SPAM / NOT SPAM**, возвращает уверенность модели, хранит историю проверок и умеет кратко пересказывать длинный текст.
 
+> **EN:** Spam detection REST API: Hugging Face transformer classifier, text summarization, request history in PostgreSQL, API-key auth, Swagger docs, Docker Compose and a small web UI. FastAPI, SQLAlchemy, scikit-learn baseline.
+
 ## Возможности
 
 - классификация текста на спам с вероятностью (transformer-модель с Hugging Face);

@@ -216,3 +216,6 @@ __pycache__/
 # Windows
 *:Zone.Identifier
 
+
+# Local databases
+*.db
